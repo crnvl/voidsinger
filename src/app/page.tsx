@@ -21,8 +21,7 @@ export default function HomePage() {
         const url = (document.getElementById("url") as HTMLInputElement).value;
         if (!url || url === "") return;
 
-        // send post to /api/edge/create
-        const response = await fetch("/create", {
+        const response = await fetch("/api/create", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
