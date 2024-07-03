@@ -10,6 +10,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     REDIS_URL: z.string(),
     REDIS_TOKEN: z.string(),
+    DOMAIN: z.string(),
   },
 
   /**
@@ -29,6 +30,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     REDIS_URL: process.env.REDIS_URL,
     REDIS_TOKEN: process.env.REDIS_TOKEN,
+    DOMAIN: process.env.DOMAIN,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

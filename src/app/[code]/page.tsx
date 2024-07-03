@@ -1,19 +1,25 @@
-"use client";
-
-import { useParams, useRouter } from "next/navigation";
+import { GetServerSidePropsContext } from "next";
+import { env } from "~/env";
 
 interface IResolveResponse {
   url: string;
   data: string;
 }
 
-export default function HomePage() {
-  const { code } = useParams();
-  const router = useRouter();
+interface IParams extends Record<string, string> {
+  code: string;
+}
 
-  console.log(code);
+export async function getServerSideProps(context: GetServerSidePropsContext<IParams>) {
+  const code = context.params?.code;
 
-  fetch(`/api/resolve`, {
+  if (!code) {
+    return {
+      notFound: true,
+    };
+  }
+
+  fetch(`${env.DOMAIN}/api/resolve`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,11 +31,22 @@ export default function HomePage() {
     }
 
     const data = await response.json() as IResolveResponse;
-    router.replace(data.url);
+    context.res.writeHead(301, { Location: data.url });
+    context.res.end();
   }).catch(() => {
-    router.replace("/");
+    context.res.writeHead(301, { Location: "/" });
+    context.res.end();
+  }).catch(() => {
+    context.res.writeHead(301, { Location: "/" });
+    context.res.end();
   });
 
+  return {
+    props: {},
+  };
+}
+
+export default function HomePage() {
   return (
     <></>
   );
