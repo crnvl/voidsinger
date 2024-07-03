@@ -1,17 +1,12 @@
-import { GetServerSidePropsContext } from "next";
+import { redirect } from "next/navigation";
 import { env } from "~/env";
 
-interface IResolveResponse {
-  url: string;
-  data: string;
-}
-
-interface IParams extends Record<string, string> {
+interface IParams {
   code: string;
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext<IParams>) {
-  const code = context.params?.code;
+async function getData(context: IParams) {
+  const code = context.code;
 
   if (!code) {
     return {
@@ -19,34 +14,43 @@ export async function getServerSideProps(context: GetServerSidePropsContext<IPar
     };
   }
 
-  fetch(`${env.DOMAIN}/api/resolve`, {
+  const response = await fetch(`${env.DOMAIN}/api/resolve/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ code }),
-  }).then(async (response) => {
-    if (!response.ok) {
-      return;
-    }
-
-    const data = await response.json() as IResolveResponse;
-    context.res.writeHead(301, { Location: data.url });
-    context.res.end();
-  }).catch(() => {
-    context.res.writeHead(301, { Location: "/" });
-    context.res.end();
-  }).catch(() => {
-    context.res.writeHead(301, { Location: "/" });
-    context.res.end();
   });
 
+  if (!response.ok) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const data = await response.json() as { url: string };
+
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
-    props: {},
+    props: {
+      data,
+    },
   };
 }
 
-export default function HomePage() {
+export default async function Page({
+  params: { code },
+}: {
+  params: { code: string }
+}) {
+  const data = await getData({ code });
+
+  redirect(data.props?.data.url ?? "/");
   return (
     <></>
   );
