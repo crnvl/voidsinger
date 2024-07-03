@@ -1,37 +1,58 @@
-import Link from "next/link";
+"use client";
+
+import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Toaster } from "~/components/ui/sonner"
+
+interface ICreateResponse {
+  key: string;
+  data: string;
+}
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
-      </div>
+    <main className="w-screen h-screen flex flex-col gap-4 justify-center items-center">
+      <Toaster />
+      <h1 className="text-4xl font-bold"></h1>
+      <form className="flex flex-col md:flex-row items-center gap-2" onSubmit={async (e) => {
+        e.preventDefault();
+
+        const url = (document.getElementById("url") as HTMLInputElement).value;
+        if (!url || url === "") return;
+
+        // send post to /api/edge/create
+        let response = await fetch("/api/edge/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+        });
+
+        if (!response.ok) {
+          toast("Error", {
+            description: "An error occurred while shortening the url",
+          });
+          return;
+        }
+
+        let data: ICreateResponse = await response.json();
+
+        toast(`${window.location.origin}/${data.key}`, {
+          description: `Your link has been created.`,
+          action: {
+            label: "Copy",
+            onClick: () => {
+              navigator.clipboard.writeText(`${window.location.origin}/${data.key}`);
+              toast("Copied to clipboard");
+            }
+          },
+        })
+      }}>
+        <Input type="url" placeholder="Paste url here" id="url" />
+        <Button type="submit" className="w-full md:w-12">➔</Button>
+      </form>
     </main>
   );
 }
