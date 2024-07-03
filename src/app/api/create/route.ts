@@ -1,7 +1,5 @@
 import { Redis } from "@upstash/redis";
 import { env } from "~/env";
-export const dynamic = 'force-dynamic';
-export const runtime = 'edge'; 
 
 interface ICreate {
     url: string;
