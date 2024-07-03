@@ -22,7 +22,7 @@ export default function HomePage() {
         if (!url || url === "") return;
 
         // send post to /api/edge/create
-        let response = await fetch("/api/edge/create", {
+        const response = await fetch("/api/edge/create", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -37,14 +37,16 @@ export default function HomePage() {
           return;
         }
 
-        let data: ICreateResponse = await response.json();
+        const data = await response.json() as ICreateResponse;
 
         toast(`${window.location.origin}/${data.key}`, {
           description: `Your link has been created.`,
           action: {
             label: "Copy",
             onClick: () => {
-              navigator.clipboard.writeText(`${window.location.origin}/${data.key}`);
+              navigator.clipboard.writeText(`${window.location.origin}/${data.key}`).catch(() => {
+                toast("Failed to copy to clipboard");
+              });
               toast("Copied to clipboard");
             }
           },
