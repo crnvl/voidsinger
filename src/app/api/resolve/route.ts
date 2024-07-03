@@ -1,5 +1,8 @@
 import { Redis } from "@upstash/redis";
 import { env } from "~/env";
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+export const runtime = 'edge'; 
 
 interface IResolve {
     code: string;
