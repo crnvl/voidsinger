@@ -22,7 +22,7 @@ export default function HomePage() {
         if (!url || url === "") return;
 
         // send post to /api/edge/create
-        const response = await fetch("/api/edge/create", {
+        const response = await fetch("/edge/create", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
