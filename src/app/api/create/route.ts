@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis";
 import { env } from "~/env";
+export const maxDuration = 55;
 
 interface ICreate {
     url: string;
