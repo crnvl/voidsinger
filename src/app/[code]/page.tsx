@@ -26,6 +26,8 @@ export default function HomePage() {
 
     const data = await response.json() as IResolveResponse;
     router.replace(data.url);
+  }).catch(() => {
+    router.replace("/");
   });
 
   return (
